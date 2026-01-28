@@ -1,0 +1,22 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIG_05'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS VIEW ASSIGNMENT 5'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_05 
+with parameters p_on : zord_num
+as select from zord_hed_tab
+inner join     zord_it_tab on zord_hed_tab.order_number = zord_it_tab.order_number
+{
+    zord_hed_tab.order_number as ORDER_NUMBER,
+    zord_hed_tab.order_date   as ORDER_DATE,
+    zord_hed_tab.payment_mode as PAYMENT_MODE,
+    zord_hed_tab.total_amount as TOTAL_AMOUNT,
+    zord_hed_tab.currency     as CURRENCY,
+    
+    zord_it_tab.order_item_number as ORDER_ITEM_NUMBER,
+    zord_it_tab.order_description as ORDER_DESCRIPTION,
+    zord_it_tab.item_cost         as ITEM_COST
+    
+} where zord_hed_tab.order_number = $parameters.p_on
