@@ -1,0 +1,63 @@
+@AbapCatalog.sqlViewName: 'ZCDS1_DDIC01'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CORE DATA SERVICES PROGRAM'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_01 as select from zord_hed_tab
+{
+      order_number as ORDER_NUMBER,
+      order_date   as ORDER_DATE,
+      payment_mode as PAYMENT_MODE,
+      sum ( total_amount ) as TOTAL_AMOUNT,
+      min ( total_amount ) as TOTAL_AMOUNT_min,
+      max ( total_amount ) as TOTAL_AMOUNT_max,
+      avg ( total_amount ) as TOTAL_AMOUNT_avg,
+      count ( distinct total_amount ) as TOTAL_AMOUNT_COUNT
+} group by order_number,order_date, payment_mode
+
+........................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zcds_call_in_program
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zcds_call_in_program.
+
+PARAMETER : p_on TYPE zord_num.
+
+SELECT ORDER_NUMBER, ORDER_DATE, PAYMENT_MODE, TOTAL_AMOUNT
+FROM ZCDS_01 INTO TABLE @DATA(IT_DATA).
+
+*LOOP AT IT_DATA INTO DATA(WA_DATA).
+*
+*WRITE: / WA_DATA-order_number,
+*         WA_DATA-order_date,
+*         WA_DATA-payment_mode,
+*         WA_DATA-total_amount.
+*
+*ENDLOOP.
+
+DATA: LO_OBJECT TYPE REF TO CL_SALV_TABLE.
+
+TRY.
+CALL METHOD cl_salv_table=>factory
+  EXPORTING
+    list_display   = IF_SALV_C_BOOL_SAP=>FALSE
+
+  IMPORTING
+    r_salv_table   = LO_OBJECT
+  CHANGING
+    t_table        = IT_DATA
+    .
+  CATCH cx_salv_msg.
+ENDTRY.
+
+lo_object->display( ).
+
+
+
+
+
+
