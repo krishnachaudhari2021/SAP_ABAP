@@ -1,0 +1,45 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIGN_01'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS ASSIGNMENT NUMBER 1'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_01 as select from mara
+{
+    matnr                   as MATERIAL_NUMBER,
+    case mtart
+         when 'ROH' then 'RAW MATERIAL'
+         else 'KRISHNA' end as MATERIAL_TYPE,
+    mbrsh                   as INDUSTRY_SECTOR,
+    meins                   as BASIC_UNIT_OF_MEASUREMENT
+}
+
+...................................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zcds_assignment_01
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zcds_assignment_01.
+
+SELECT MATERIAL_NUMBER, MATERIAL_TYPE, INDUSTRY_SECTOR, BASIC_UNIT_OF_MEASUREMENT
+FROM ZCDS_ASSIGNMENT_01
+INTO TABLE @DATA(IT_MATERIAL).
+
+DATA: LO_TABLE TYPE REF TO CL_SALV_TABLE.
+
+TRY.
+CALL METHOD cl_salv_table=>factory
+  EXPORTING
+    list_display   = IF_SALV_C_BOOL_SAP=>FALSE
+
+  IMPORTING
+    r_salv_table   = LO_TABLE
+  CHANGING
+    t_table        = IT_MATERIAL
+    .
+  CATCH cx_salv_msg.
+ENDTRY.
+
+LO_TABLE->display( ).
