@@ -1,0 +1,20 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIG_03'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS VIEW ASSIGNMENT 3'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_03 as select from spfli
+{
+    key carrid                 as AIRLINE_CODE,
+        countryfr              as COUNTRY_KEY,
+        sum(fltime)            as SUM_OF_FLIGHT_TIME,
+        max(fltime)            as MAX_FLIGHT_TIME,
+        min(fltime)            as MIN_FLIGHT_TIME,
+        avg(fltime)            as AVERAGE_FLIGHT_TIME,
+        count(distinct fltime) as COUNT_FLIGHT_TIME
+}
+group by 
+   carrid,
+   countryfr
+having sum(fltime) > 400
