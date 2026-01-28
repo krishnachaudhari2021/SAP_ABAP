@@ -1,0 +1,299 @@
+*&---------------------------------------------------------------------*
+*& Report znew_hana_program
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT znew_hana_program.
+
+*SELECT   BUYER_GUID        AS BUYER_GUID,
+*         GROSS_AMOUNT      AS GROSS_AMOUNT,
+*  ROUND( GROSS_AMOUNT, 0 ) AS GROSS_AMOUNT_WITH_ZERO,
+*   CEIL( GROSS_AMOUNT )    AS ROUND_AMOUNT
+*
+*FROM SNWD_SO INTO TABLE @DATA(IT_DATA).
+*
+*LOOP AT IT_DATA INTO DATA(WA_DATA).
+*
+*WRITE: / WA_DATA-BUYER_GUID,
+*         WA_DATA-GROSS_AMOUNT,
+*         WA_DATA-GROSS_AMOUNT_WITH_ZERO,
+*         WA_DATA-ROUND_AMOUNT.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT  BUYER_GUID        AS BUYER_GUID,
+*   SUM( GROSS_AMOUNT )    AS GROSS_AMOUNT,
+*
+*   CASE WHEN SUM( GROSS_AMOUNT ) > 10000 THEN 'HIGH'
+*        ELSE 'LOW' END AS AMOUNT_LEVEL
+*        FROM SNWD_SO GROUP BY BUYER_GUID
+*        INTO TABLE @DATA(IT_DATA).
+*
+*LOOP AT IT_DATA INTO DATA(WA_DATA).
+*
+*WRITE: / WA_DATA-buyer_guid,
+*         WA_DATA-gross_amount,
+*         WA_DATA-amount_level.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT ORDER_NUMBER AS ORDER_NUMBER,
+*  SUM( ITEM_COST ) AS ORDER_ITEM_COST,
+*
+*CASE WHEN SUM( ITEM_COST ) > 2000 THEN 'HIGH'
+*     ELSE 'LOW' END AS AMOUNT_LEVEL
+*     FROM ZORD_IT_TAB GROUP BY ORDER_NUMBER
+*     INTO TABLE @DATA(IT_ORD).
+*
+*LOOP AT IT_ORD INTO DATA(WA_ORD).
+*
+*WRITE: / WA_ORD-order_number,
+*         WA_ORD-order_item_cost,
+*         WA_ORD-amount_level.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*DATA: IT_MARA TYPE TABLE OF MARA.
+*DATA: IS_MARA LIKE LINE OF IT_MARA.
+*
+*SELECT MATNR, MTART, MBRSH, MEINS FROM MARA
+*INTO CORRESPONDING FIELDS OF TABLE @IT_MARA UP TO 100 ROWS.
+*
+*LOOP AT IT_MARA INTO IS_MARA.
+*
+*WRITE: / IS_MARA-matnr, IS_MARA-mtart,  IS_MARA-mbrsh, IS_MARA-MEINS.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT MATNR, MTART, MBRSH, MEINS FROM MARA
+*INTO TABLE @DATA(IT_MARA)
+*UP TO 10 ROWS.
+*
+*LOOP AT IT_MARA INTO DATA(IS_MARA).
+*
+*WRITE: / IS_MARA-matnr, IS_MARA-mtart, IS_MARA-mbrsh, IS_MARA-meins.
+*
+*ENDLOOP.
+
+*LOOP AT IT_MARA ASSIGNING FIELD-SYMBOL(<FS_MARA>).
+*
+*WRITE: / <FS_MARA>-MATNR, <FS_MARA>-MBRSH, <FS_MARA>-MEINS, <fs_mara>-matnr.
+*
+*ENDLOOP.
+*
+*
+*LOOP AT IT_MARA REFERENCE INTO DATA(lo_mara).
+*
+*WRITE: / lo_mara->matnr, lo_mara->mbrsh,lo_mara->meins,lo_mara->mtart.
+*
+*ENDLOOP.
+
+
+*---------------------------------------------------------------------*
+*
+*SELECT 'HELLO'&& MATNR AS MATNR_1
+*FROM MARA
+*INTO TABLE @DATA(IT_MARA)
+*UP TO 5 ROWS.
+*
+*LOOP AT IT_MARA INTO DATA(IS_MARA).
+*
+*WRITE: / IS_MARA.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT BUYER_GUID, GROSS_AMOUNT, ROUND( GROSS_AMOUNT, 0 ) AS GROSS_AMOUNT_ROUND,
+*
+*CEIL( GROSS_AMOUNT ) AS ROUND_AMOUNT
+*
+*FROM SNWD_SO INTO TABLE @DATA(ITAB).
+*
+*loop at itab into data(Is_tab).
+*
+*WRITE: / Is_tab-buyer_guid, Is_tab-gross_amount, Is_tab-gross_amount_round, Is_tab-round_amount.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT company_name,
+*
+*case bp_role
+*
+*when '1' then 'customer'
+*
+*when '2' then 'supplier'
+*
+*when '4' then 'contractor'
+*
+*ELSE 'i dont know'
+*
+*end as bp_role
+*
+*from snwd_bpa into TABLE @data(It_data).
+*
+*loop at It_data into data(Is_data).
+*
+*WRITE: / Is_data-company_name, Is_data-bp_role.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT SO_ID, GROSS_AMOUNT,
+*
+*CASE
+*
+*WHEN GROSS_AMOUNT > 50 THEN 'HIGH'
+*
+*WHEN GROSS_AMOUNT < 50 AND GROSS_AMOUNT > 25 THEN 'MEDIUM'
+*
+*ELSE 'LOW'
+*
+*END AS ORDER_TYPE
+*
+*FROM SNWD_SO INTO TABLE @DATA(ITAB).
+*
+*LOOP AT ITAB INTO DATA(LS_TAB).
+*
+*WRITE: / LS_TAB-so_id, LS_TAB-gross_amount, LS_TAB-order_type.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*SELECT BUYER_GUID, SUM( GROSS_AMOUNT ) AS GROSS_AMOUNT,
+*
+*CASE
+*
+*WHEN SUM( GROSS_AMOUNT ) > 20000 THEN 'X'
+*
+*ELSE 'Y' END AS ORD_TYPE
+*
+*FROM SNWD_SO
+*
+*GROUP BY BUYER_GUID
+*
+*INTO TABLE @DATA(ITAB).
+*
+*LOOP AT ITAB INTO DATA(WA).
+*
+*WRITE: / WA-buyer_guid, WA-gross_amount, WA-ord_type.
+*
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*DATA: LV_STRING TYPE STRING.
+*
+*CONCATENATE 'I LOVE INDIA' INTO LV_STRING SEPARATED BY.
+*
+*WRITE: / LV_STRING.
+
+*---------------------------------------------------------------------*
+
+*DATA(LV_COUNTRY) = 'INDIA'.
+*DATA(LV_STRING) = |I LOVE { LV_COUNTRY }|.
+*WRITE: / LV_STRING.
+
+*---------------------------------------------------------------------*
+
+* VALUE EXPRESSION
+
+*TYPES: BEGIN OF str1,
+*         emp_id   TYPE num2,
+*         emp_name TYPE char10,
+*         emp_desi TYPE char15,
+*       END OF str1.
+*TYPES TT_str1 TYPE TABLE OF str1 WITH DEFAULT KEY.
+*
+*DATA(it_data) = VALUE TT_str1(
+*   ( emp_id = '1' emp_name = 'RAHUL' emp_desi = 'SAP ABAP' )
+*   ( emp_id = '2' emp_name = 'GAESH' emp_desi = 'SAP PP'   ) ).
+*DATA WA_DATA TYPE STR1.
+*
+*LOOP AT it_data INTO wa_data.
+*  WRITE: / wa_data-emp_id,
+*           wa_data-emp_name,
+*           wa_data-emp_desi.
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*CORRESPONDING
+
+*TYPES: BEGIN OF EMP_str1,
+*         emp_id   TYPE num2,
+*         emp_name TYPE char10,
+*         emp_desi TYPE char15,
+*       END OF EMP_str1,
+*LT_DATA TYPE TABLE OF EMP_STR1 WITH DEFAULT KEY.
+*
+*
+*DATA(it_data) = VALUE LT_DATA(
+*   ( emp_id = '1' emp_name = 'RAHUL' emp_desi = 'SAP ABAP' )
+*   ( emp_id = '2' emp_name = 'GAESH' emp_desi = 'SAP PP'   ) ).
+*DATA WA_DATA TYPE EMP_STR1.
+*
+*DATA(it_data1) = CORRESPONDING LT_DATA( it_data ).
+*
+*LOOP AT it_data INTO wa_data.
+*  WRITE: / wa_data-emp_id,
+*           wa_data-emp_name,
+*           wa_data-emp_desi.
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+
+*USING # FOR RECORD
+
+*TYPES: BEGIN OF EMP_str1,
+*         emp_id   TYPE num2,
+*         emp_name TYPE char10,
+*         emp_desi TYPE char15,
+*       END OF EMP_str1.
+*
+*DATA: IT_DATA TYPE TABLE OF EMP_STR1.
+*
+*IT_DATA = VALUE #( ( EMP_ID = '1' EMP_NAME = 'KRISHNA' EMP_DESI = 'SAP ABAP') ).
+*
+*DATA WA_DATA TYPE EMP_STR1.
+*
+*LOOP AT it_data INTO wa_data.
+*  WRITE: / wa_data-emp_id,
+*           wa_data-emp_name,
+*           wa_data-emp_desi.
+*ENDLOOP.
+
+*---------------------------------------------------------------------*
+*USING TABLE TYPE TO CREATE INTERNAL TABLE WITH DATA
+
+TYPES: BEGIN OF str1,
+         emp_id   TYPE num2,
+         emp_name TYPE char10,
+         emp_desi TYPE char15,
+       END OF str1.
+TYPES TT_str1 TYPE TABLE OF str1 WITH DEFAULT KEY.
+
+DATA(it_data) = VALUE TT_str1(
+   ( emp_id = '1' emp_name = 'RAHUL' emp_desi = 'SAP ABAP' )
+   ( emp_id = '2' emp_name = 'GAESH' emp_desi = 'SAP PP'   ) ).
+DATA WA_DATA TYPE STR1.
+
+*READ OPERATION
+*READ TABLE IT_DATA INTO DATA(LS_EMP) WITH KEY EMP_ID = '2'.
+
+*USING TABLE OPERATION
+DATA(LS_EMP) = IT_DATA[ EMP_ID = '2' ].
+WRITE: / LS_EMP-emp_id, LS_EMP-emp_name, LS_EMP-emp_desi.
+
