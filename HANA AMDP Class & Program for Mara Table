@@ -1,0 +1,102 @@
+CLASS zamdp_assignment_03 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+  INTERFACES IF_AMDP_MARKER_HDB.
+
+  TYPES: BEGIN OF STR1,
+
+         MATNR TYPE MATNR,
+         MTART TYPE MTART,
+         MBRSH TYPE MBRSH,
+
+         END OF STR1.
+
+TYPES: STR1_TT TYPE TABLE OF STR1.
+
+DATA: IT_TABLE TYPE STR1_TT.
+
+METHODS: MATERIAL IMPORTING VALUE(P_MATNR) TYPE STRING
+                  EXPORTING VALUE(IT_TABLE) TYPE STR1_TT.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zamdp_assignment_03 IMPLEMENTATION.
+
+METHOD MATERIAL BY DATABASE PROCEDURE FOR HDB LANGUAGE
+                SQLSCRIPT OPTIONS READ-ONLY USING MARA.
+
+IT_TABLE = SELECT MATNR, MTART, MBRSH
+           FROM MARA;
+
+IT_TABLE = APPLY_FILTER (:IT_TABLE, :P_MATNR );
+
+ENDMETHOD.
+
+...........................................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zamdp_assign_03
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zamdp_assign_03.
+
+TYPES: BEGIN OF STR1,
+
+         MATNR TYPE MATNR,
+         MTART TYPE MTART,
+         MBRSH TYPE MBRSH,
+
+         END OF STR1.
+
+DATA: IT_TABLE TYPE TABLE OF STR1.
+
+DATA: lT_SELTAB TYPE IF_SHDB_DEF=>ts_named_dref,
+      lS_SELTAB TYPE IF_SHDB_DEF=>TS_NAMED_DREF.
+
+DATA: lV_STRING TYPE STRING.
+
+DATA: S_OP TYPE MATNR.
+SELECT-OPTIONS: SOP FOR S_OP.
+
+lS_SELTAB-name = 'MATNR'.
+lS_SELTAB-dref = REF #( SOP[] ).
+"APPEND lS_SELTAB TO lT_SELTAB."
+
+TRY.
+CALL METHOD cl_shdb_seltab=>combine_seltabs
+EXPORTING
+it_named_seltabs = lT_SELTAB
+receiving
+rv_where         = lV_STRING.
+
+CATCH cx_shdb_exception.
+ENDTRY.
+CLEAR lS_SELTAB.
+
+DATA(LO_OBJECT) = NEW zamdp_assignment_03( ).
+
+
+CALL METHOD LO_OBJECT->MATERIAL
+EXPORTING
+P_MATNR = LV_STRING
+IMPORTING
+IT_TABLE = IT_TABLE.
+
+LOOP AT IT_TABLE INTO DATA(WA_TABLE).
+
+  WRITE: / WA_TABLE-mtart, WA_TABLE-mtart, WA_TABLE-mbrsh.
+
+ENDLOOP.
+
+
+
+
+
+ENDCLASS.
