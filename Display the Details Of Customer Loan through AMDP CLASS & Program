@@ -1,0 +1,70 @@
+CLASS zamdp_assignment_02 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+  INTERFACES IF_AMDP_MARKER_HDB.
+
+  TYPES: BEGIN OF STR1,
+
+         CUST_ID TYPE INT4,
+         LOANAMOUNT TYPE INT4,
+         LOANDATE TYPE DATS,
+
+         END OF STR1.
+
+  TYPES: STR1_TT TYPE TABLE OF STR1.
+
+  CLASS-METHODS: DISPLAY IMPORTING VALUE(P_ID)     TYPE INT4
+                         EXPORTING VALUE(IT_TABLE) TYPE STR1_TT.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zamdp_assignment_02 IMPLEMENTATION.
+
+METHOD DISPLAY BY DATABASE PROCEDURE FOR HDB LANGUAGE
+               SQLSCRIPT OPTIONS READ-ONLY
+               USING ZCUST_LOAN_01.
+
+IT_TABLE = SELECT CUST_ID, LOANAMOUNT, LOANDATE
+           FROM ZCUST_LOAN_01
+           WHERE CUST_ID = P_ID;
+
+ENDMETHOD.
+
+.......................................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zamdp_assign_02
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zamdp_assign_02.
+
+TYPES: BEGIN OF STR1,
+
+         CUST_ID TYPE INT4,
+         LOANAMOUNT TYPE INT4,
+         LOANDATE TYPE DATS,
+
+         END OF STR1.
+
+DATA: IT_TABLE TYPE TABLE OF STR1.
+
+PARAMETERS: P_ID TYPE INT4.
+
+START-OF-SELECTION.
+
+CALL METHOD zamdp_assignment_02=>display EXPORTING P_ID = P_ID
+                                         IMPORTING IT_TABLE = IT_TABLE.
+
+LOOP AT IT_TABLE INTO DATA(WA_TABLE).
+
+WRITE: / WA_TABLE-cust_id, WA_TABLE-loanamount, WA_TABLE-loandate.
+
+ENDLOOP.
+
+ENDCLASS.
