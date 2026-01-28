@@ -1,0 +1,135 @@
+CLASS zamdp_assignment_04 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+  INTERFACES IF_AMDP_MARKER_HDB.
+
+  TYPES: BEGIN OF STR1,
+
+         ORDER_NUMBER TYPE ZORD_NUM,
+         ORDER_DATE TYPE ZORD_DATE,
+         PAYMENT_MODE TYPE ZPAY_MODE,
+         TOTAL_AMOUNT TYPE ZTOT_AMT,
+
+         END OF STR1.
+
+  TYPES: BEGIN OF STR2,
+
+         ORDER_NUMBER TYPE ZORD_NUM,
+         ORDER_ITEM_NUMBER TYPE ZORD_ITEM,
+         ORDER_DESCRIPTION TYPE ZORD_DES,
+         ITEM_COST TYPE ZIT_COST,
+
+         END OF STR2.
+
+  TYPES: STR1_TT TYPE TABLE OF STR1,
+         STR2_TT TYPE TABLE OF STR2.
+
+  CLASS-METHODS: DISPLAY_ORDER IMPORTING VALUE(P_ON) TYPE ZORD_NUM
+                               EXPORTING VALUE(IT_ORD1) TYPE STR1_TT
+                                         VALUE(IT_ORD2) TYPE STR2_TT.
+
+  METHODS: CALLING_AMDP_METHOD IMPORTING PON TYPE ZORD_NUM
+                               EXPORTING IT_ORD1 TYPE STR1_TT
+                                         IT_ORD2 TYPE STR2_TT.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zamdp_assignment_04 IMPLEMENTATION.
+
+METHOD CALLING_AMDP_METHOD.
+
+CALL METHOD ME->display_order
+
+EXPORTING P_ON = PON
+IMPORTING IT_ORD1 = IT_ORD1
+          IT_ORD2 = IT_ORD2.
+
+ENDMETHOD.
+
+METHOD: DISPLAY_ORDER BY DATABASE PROCEDURE FOR HDB LANGUAGE
+                      SQLSCRIPT OPTIONS READ-ONLY USING ZORD_HED_TAB ZORD_IT_TAB.
+
+IT_ORD1 = SELECT ORDER_NUMBER, ORDER_DATE, PAYMENT_MODE, TOTAL_AMOUNT
+          FROM ZORD_HED_TAB
+          WHERE ORDER_NUMBER = P_ON;
+
+IT_ORD2 = SELECT ORDER_NUMBER, ORDER_ITEM_NUMBER, ORDER_DESCRIPTION, ITEM_COST
+          FROM ZORD_IT_TAB
+          WHERE ORDER_NUMBER = P_ON;
+
+ENDMETHOD.
+
+ENDCLASS.
+
+.......................................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zamdp_assignment_o4
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zamdp_assignment_o4.
+
+TYPES: BEGIN OF STR1,
+
+       ORDER_NUMBER TYPE ZORD_NUM,
+       ORDER_DATE TYPE ZORD_DATE,
+       PAYMENT_MODE TYPE ZPAY_MODE,
+       TOTAL_AMOUNT TYPE ZTOT_AMT,
+
+       END OF STR1.
+
+TYPES: BEGIN OF STR2,
+
+       ORDER_NUMBER TYPE ZORD_NUM,
+       ORDER_ITEM_NUMBER TYPE ZORD_ITEM,
+       ORDER_DESCRIPTION TYPE ZORD_DES,
+       ITEM_COST TYPE ZIT_COST,
+
+       END OF STR2.
+
+TYPES: STR1_TT TYPE TABLE OF STR1,
+       STR2_TT TYPE TABLE OF STR2.
+
+DATA: IT_ORD1 TYPE STR1_TT,
+      WA_ORD1 TYPE STR1.
+
+DATA: IT_ORD2 TYPE STR2_TT,
+      WA_ORD2 TYPE STR2.
+
+PARAMETERS: R1 TYPE C RADIOBUTTON GROUP G1,
+            R2 TYPE C RADIOBUTTON GROUP G1.
+
+PARAMETERS: P_ON TYPE ZORD_NUM.
+
+START-OF-SELECTION.
+
+DATA(LO_OBJECT) = NEW zamdp_assignment_04(  ).
+
+CALL METHOD LO_OBJECT->calling_amdp_method
+
+EXPORTING PON = P_ON
+IMPORTING IT_ORD1 = IT_ORD1
+          IT_ORD2 = IT_ORD2.
+
+IF R1 = 'X'.
+
+LOOP AT IT_ORD1 INTO WA_ORD1.
+WRITE: / WA_ORD1-order_number, WA_ORD1-order_date, WA_ORD1-payment_mode, WA_ORD1-total_amount.
+ENDLOOP.
+
+ENDIF.
+
+IF R2 = 'X'.
+
+LOOP AT IT_ORD2 INTO WA_ORD2.
+WRITE: / WA_ORD2-order_number, WA_ORD2-order_item_number, WA_ORD2-order_description, WA_ORD2-item_cost.
+ENDLOOP.
+
+ENDIF.
