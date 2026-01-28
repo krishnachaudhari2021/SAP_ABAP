@@ -1,0 +1,21 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIG_04'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS VIEW ASSIGNMENT 4'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_04
+with parameters P_CURR : abap.cuky,
+                P_DATE : abap.dats
+ as select from sflight
+{
+    key carrid,
+    key connid,
+    key fldate,
+    
+    currency_conversion( AMOUNT =>price,
+                         SOURCE_CURRENCY =>currency,
+                         TARGET_CURRENCY =>$parameters.P_CURR,
+                         EXCHANGE_RATE_DATE =>$parameters.P_DATE ) as CONVERTED_CURRENCY,
+                         :P_CURR as TARGET_CURRENCY
+} where carrid = 'AA'
