@@ -31,3 +31,50 @@ ENDMETHOD.
 
 
 ENDCLASS.
+
+....................................................................................................................................
+
+
+*&---------------------------------------------------------------------*
+*& Report zamdp_assign_01
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zamdp_assign_01.
+
+DATA: IT_LOAN TYPE ZTT_LOAN_TABLE_01.
+DATA(LO_OBJECT) = NEW zamdp_class_01(  ).
+
+CALL METHOD LO_OBJECT->CUST_LOAN
+
+IMPORTING
+IT_LOAN = IT_LOAN.
+
+IF SY-subrc EQ 0.
+
+SORT IT_LOAN BY CUST_ID ASCENDING.
+
+LOOP AT IT_LOAN INTO DATA(WA_LOAN).
+
+  WRITE: / WA_LOAN-CUST_ID, WA_LOAN-LOANAMOUNT, WA_LOAN-LOANDATE, WA_LOAN-DUEDATE, WA_LOAN-PRIORITY, WA_LOAN-INTEREST.
+
+ENDLOOP.
+
+ENDIF.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
