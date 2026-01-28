@@ -1,0 +1,72 @@
+*&---------------------------------------------------------------------*
+*& Report zopen_sql_program
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zopen_sql_program.
+
+
+*---------------------------------------------------------------------*
+* String handling using String Template
+*---------------------------------------------------------------------*
+
+DATA: VAR1 TYPE STRING VALUE 'I LOVE',
+      VAR2 TYPE STRING VALUE 'INDIA',
+      VAR3 TYPE STRING.
+
+CONCATENATE VAR1 VAR2 INTO VAR3 SEPARATED BY SPACE.
+
+WRITE: / VAR3.
+
+*---------------------------------------------------------------------*
+
+*DATA(var0) = 1.
+*DATA(var1) = 'I LOVE'.
+*DATA(var2) = 'INDIA'.
+*
+*DATA(var3) = |{ var1 } { var2 } { var0 }|.
+*WRITE: / var3.
+
+*---------------------------------------------------------------------*
+* Structure definition
+*---------------------------------------------------------------------*
+TYPES: BEGIN OF str1,
+         emp_id   TYPE num2,
+         emp_name TYPE char10,
+         emp_desi TYPE char15,
+       END OF str1.
+
+*---------------------------------------------------------------------*
+* Internal table type
+*---------------------------------------------------------------------*
+*TYPES tt_str1 TYPE TABLE OF str1 WITH DEFAULT KEY.
+
+*---------------------------------------------------------------------*
+* Internal table declaration & data using VALUE
+*---------------------------------------------------------------------*
+*DATA(it_data) = VALUE tt_str1(
+*  ( emp_id = '1' emp_name = 'RAHUL' emp_desi = 'SAP ABAP' )
+*  ( emp_id = '2' emp_name = 'GAESH' emp_desi = 'SAP PP'   ) ).
+
+*---------------------------------------------------------------------*
+* Copy data using CORRESPONDING
+*---------------------------------------------------------------------*
+*DATA(it_data1) = CORRESPONDING tt_str1( it_data ).
+
+*---------------------------------------------------------------------*
+* Another WAY
+*---------------------------------------------------------------------*
+DATA IT_data TYPE TABLE OF str1.
+
+IT_DATA = VALUE #( ( EMP_ID = '1' EMP_NAME = 'KRISHNA' EMP_DESI = 'SAP ABAP') ).
+
+DATA WA_DATA TYPE STR1.
+
+*---------------------------------------------------------------------*
+* Loop and display
+*---------------------------------------------------------------------*
+LOOP AT it_data INTO wa_data.
+  WRITE: / wa_data-emp_id,
+           wa_data-emp_name,
+           wa_data-emp_desi.
+ENDLOOP.
