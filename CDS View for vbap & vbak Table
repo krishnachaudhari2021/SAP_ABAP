@@ -1,0 +1,50 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIG_06'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS VIEW ASSIGNMENT 6'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_06 
+with parameters P_VBELN : vbeln_va,
+                P_SPRAS : spras
+as select from vbap
+inner join vbak
+on vbak.vbeln = vbap.vbeln
+inner join makt
+on vbap.matnr = makt.matnr
+{
+   vbak.vbeln as SALES_DOC_NUMBER,
+   vbak.erdat as CREATION_DATE,
+   vbak.erzet as TIME,
+   vbak.ernam as USER_NAME,
+   vbak.vbtyp as SALES_DOC_CATEGORY,
+   
+   vbap.posnr as ITEM_NUMBER,
+   vbap.matnr as MATERIAL_NUMBER,
+   
+   makt.spras as LANGUAGE_KEY,
+   makt.maktx as MATERIAL_DESCRIPTION 
+}
+where vbak.vbeln = $parameters.P_VBELN and makt.spras = $parameters.P_SPRAS
+
+..............................................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zcds_assignment_06
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zcds_assignment_06.
+
+PARAMETERS : P_VBELN TYPE VBELN_VA,
+             P_SPRAS TYPE SPRAS.
+
+START-OF-SELECTION.
+
+SELECT * FROM ZCDS_ASSIGNMENT_06( P_VBELN = @P_VBELN, P_SPRAS = @P_SPRAS )
+INTO TABLE @DATA(LT_TABLE).
+
+CL_DEMO_OUTPUT=>display( LT_TABLE ).
+
+
+
