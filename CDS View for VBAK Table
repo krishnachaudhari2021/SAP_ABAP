@@ -1,0 +1,42 @@
+@AbapCatalog.sqlViewName: 'ZSQL_ASSIG_02'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS VIEW ASSIGNMENT 2'
+@Metadata.ignorePropagatedAnnotations: true
+define view ZCDS_ASSIGNMENT_02 
+with parameters P_VBELN : vbeln_va
+as select from vbak
+{
+    key vbeln as SALES_DOC_NUMBER,
+        erdat as DOCUMENT_DATE,
+        erzet as TIME,
+        ernam as USER_NAME,
+        vbtyp as DOCUMENT_CATEGORY
+        
+} where vbeln = $parameters.P_VBELN
+
+.....................................................................................................
+
+*&---------------------------------------------------------------------*
+*& Report zcds_assignment_02
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zcds_assignment_02.
+
+PARAMETERS: P_VBELN TYPE VBELN_VA.
+
+SELECT SALES_DOC_NUMBER, DOCUMENT_DATE, TIME, USER_NAME, DOCUMENT_CATEGORY
+FROM ZCDS_ASSIGNMENT_02( P_VBELN = @P_VBELN )
+INTO TABLE @DATA(IT_VBAK).
+
+LOOP AT IT_VBAK INTO DATA(LS_VBAK).
+
+WRITE: / LS_VBAK-sales_doc_number,
+         LS_VBAK-document_date,
+         LS_VBAK-time,
+         LS_VBAK-user_name,
+         LS_VBAK-document_category.
+
+ENDLOOP.
