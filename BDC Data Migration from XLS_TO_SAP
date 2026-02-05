@@ -1,0 +1,137 @@
+report ZBDC_01
+       no standard page heading line-size 255.
+
+TYPES: BEGIN OF str1,
+
+       matnr TYPE MATNR,
+       MBRSH TYPE MBRSH,
+       MTART TYPE MTART,
+       maktx TYPE maktx,
+       MEINS TYPE MEINS,
+
+       END OF str1.
+
+
+DATA: it_mara TYPE table of str1,
+      wa_mara TYPE str1.
+
+DATA: IT_BDC TYPE TABLE OF BDCDATA,
+      WA_BDC TYPE BDCDATA.
+
+DATA: IT_RAW TYPE TRUXS_T_TEXT_DATA.
+
+
+DATA: P_FILE1 TYPE RLGRAP-FILENAME.
+
+PARAMETERS: p_file TYPE RLGRAP-FILENAME.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR P_FILE.
+
+
+CALL FUNCTION 'F4_FILENAME'
+ IMPORTING
+   FILE_NAME           = P_FILE.
+
+
+P_FILE1 = P_FILE.     " TYPE CASTING
+
+START-OF-SELECTION.
+*
+*CALL FUNCTION 'GUI_UPLOAD'
+*  EXPORTING
+*    filename                      = P_fILE1
+*   FILETYPE                      = 'ASC'
+*   HAS_FIELD_SEPARATOR           = 'X'
+*
+*  tables
+*    data_tab                      =  IT_MARA.
+
+CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+  EXPORTING
+   I_FIELD_SEPERATOR          = 'X'
+
+    I_TAB_RAW_DATA             = IT_RAW
+    I_FILENAME                 = P_fILE1
+  TABLES
+    I_TAB_CONVERTED_DATA       = IT_MARA.
+
+
+*  LOOP AT IT_MARA INTO WA_MARA.
+*
+*    WRITE: / WA_MARA-matnr,
+*             WA_MARA-mtart,
+*             WA_MARA-mbrsh,
+*             WA_MARA-maktx,
+*             WA_MARA-meins.
+*
+*  ENDLOOP.
+
+
+*include bdcrecx1.
+
+start-of-selection.
+
+*perform open_group.
+
+LOOP AT IT_MARA INTO WA_MARA.
+
+perform bdc_dynpro      using 'SAPLMGMM' '0060'.
+perform bdc_field       using 'BDC_CURSOR'
+                              'RMMG1-MTART'.
+perform bdc_field       using 'BDC_OKCODE'
+                              '=ENTR'.
+perform bdc_field       using 'RMMG1-MATNR'
+                              WA_MARA-matnr.
+perform bdc_field       using 'RMMG1-MBRSH'
+                              WA_MARA-mbrsh.
+perform bdc_field       using 'RMMG1-MTART'
+                               WA_MARA-mtart.
+perform bdc_dynpro      using 'SAPLMGMM' '0070'.
+perform bdc_field       using 'BDC_CURSOR'
+                              'MSICHTAUSW-DYTXT(01)'.
+perform bdc_field       using 'BDC_OKCODE'
+                              '=ENTR'.
+perform bdc_field       using 'MSICHTAUSW-KZSEL(01)'
+                              'X'.
+perform bdc_dynpro      using 'SAPLMGMM' '4004'.
+perform bdc_field       using 'BDC_OKCODE'
+                              '/00'.
+perform bdc_field       using 'MAKT-MAKTX'
+                               WA_MARA-maktx.
+perform bdc_field       using 'BDC_CURSOR'
+                              'MARA-MEINS'.
+perform bdc_field       using 'MARA-MEINS'
+                              WA_MARA-meins.
+*perform bdc_field       using 'MARA-MTPOS_MARA'
+*                              'NORM'.
+*perform bdc_dynpro      using 'SAPLSPO1' '0300'.
+*perform bdc_field       using 'BDC_OKCODE'
+*                              '=YES'.
+
+CALL TRANSACTION 'MM01' USING IT_BDC MODE 'A'.
+
+REFRESH IT_BDC.
+
+ENDLOOP.
+
+FORM BDC_DYNPRO USING PROGRAM DYNPRO.
+
+  CLEAR WA_BDC.
+  WA_BDC-PROGRAM  = PROGRAM.
+  WA_BDC-DYNPRO   = DYNPRO.
+  WA_BDC-DYNBEGIN = 'X'.
+  APPEND WA_BDC TO IT_BDC.
+
+ENDFORM.
+
+*----------------------------------------------------------------------
+*        Insert field                                                  *
+*----------------------------------------------------------------------
+FORM BDC_FIELD USING FNAM FVAL.
+
+    CLEAR WA_BDC.
+    WA_BDC-FNAM = FNAM.
+    WA_BDC-FVAL = FVAL.
+    APPEND WA_BDC TO IT_BDC.
+
+ENDFORM.
